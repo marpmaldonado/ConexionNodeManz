@@ -22,7 +22,8 @@ const db = ({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'unman'
+    database: 'unman',
+    timezone:'America/Bogota'
   });
   app.post('/crear', async (req,res)=>{
     const { Nombre, Tipo, Documento, id_manzanas} = req.body; 
@@ -66,6 +67,7 @@ const db = ({
         
     }
 })
+
 //Ruta para manejar Login
 app.post('/inicia', async(req,res)=>{
   const {Tipo,Documento}= req.body
@@ -75,17 +77,16 @@ app.post('/inicia', async(req,res)=>{
     const [indicador]=await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?',[Documento,Tipo]);
     console.log(indicador);
     if(indicador.length>0){
-      req.session.usuario=indicador[0].Nombre
-      req.session.Documento=Documento
-      if(indicador[0].Rol=="administrador"){
-        res.locals.usuario=usuario
-      res.sendfile(path.join(__dirname,'/administrador.html'))
+      req.session.usuario=indicador[0].Nombre;
+      req.session.Documento=Documento;
+      if(indicador[0].rol=="administrador"){
+      res.sendFile(path.join(__dirname,'administrador.html'));
       }
       else{
         const usuario={nombre:indicador[0].Nombre}
         console.log(usuario)
-        res.locals.usuario=usuario
-      res.sendfile(path.join(__dirname,'usuario.html'))
+        res.locals.usuario=usuario;
+      res.sendFile(path.join(__dirname,'usuario.html'));
     }
     }
     else{
@@ -108,6 +109,42 @@ app.post('/inicia', async(req,res)=>{
   }
   
 })
+
+
+//Administrador
+app.post('/mostrar-usuarios',async(req,res)=>{
+  const Documento=req.session.Documento;
+  try{
+    const conect= await mysql.createConnection(db)
+const [obtusuario] = await conect.execute('SELECT * FROM usuario WHERE usuario.rol="usuario"',[Documento]);
+console.log(obtusuario);
+  res.json({usuarios: obtusuario})
+await conect.end()
+  }
+catch(error){
+  console.error('Error En El Servidor:',error);
+ res.status(500).send('Error En El Servidor.. :c');
+}
+})
+//boorar usuario
+app.delete('/eliminar-usuario/:id_user',async(req,res)=>{
+  const IdU=req.params.id_user;
+  
+
+  try{
+    const conect= await mysql.createConnection(db);
+    await conect.query('DELETE from solicitudes where id1=?',[IdU]);
+    await conect.execute('DELETE FROM usuario WHERE usuario.id_user=?',[IdU])
+    res.status(200).send("usuario borrado")
+    console.log("Usuario borrado con exito", IdU)
+  await conect.end();
+  }
+  catch(error){
+    console.error('Error En El Servidor:',error);
+   res.status(500).send('Error En El Servidor.. :c');
+  }
+})
+
 
 app.post('/obtener-usuario',(req,res)=>{
   const usuario =req.session.usuario;
@@ -159,7 +196,7 @@ app.post('/obtener-servicios-guardados',async(req,res)=>{
   try{
     const conect= await mysql.createConnection(db)
     const [IDU] =await conect.execute('SELECT usuario.id_user FROM usuario WHERE usuario.Documento=?',[Documento]);
-    const [serviciosGuardadosData] =await conect.query('SELECT usuario.Nombre, servicios.Nombre, solicitudes.id_solicitudes, solicitudes.fecha FROM solicitudes INNER JOIN usuario ON solicitudes.id1= usuario.id_user  INNER JOIN manzanas ON usuario.id_manzanas = manzanas.id_manzanas  INNER JOIN manzana_servicios ON manzanas.id_manzanas = manzana_servicios.id_m  INNER JOIN servicios ON servicios.id_servicios = manzana_servicios.id_s WHERE  servicios.id_servicios=solicitudes.codigoS AND usuario.Documento=1234',[IDU[0].id_user])
+    const [serviciosGuardadosData] =await conect.query('SELECT solicitudes.fecha, servicios.id_servicios, servicios.Nombre , usuario.Documento FROM solicitudes INNER JOIN usuario ON usuario.id_user = solicitudes.id1 INNER JOIN manzanas on manzanas.id_manzanas = usuario.id_manzanas INNER JOIN manzana_servicios on manzana_servicios.id_m = manzanas.id_manzanas INNER JOIN servicios ON servicios.id_servicios = manzana_servicios.id_s WHERE usuario.Documento=? AND servicios.id_servicios=solicitudes.codigoS',[Documento])
     const serviciosGuardadosFiltrados=serviciosGuardadosData.map(servicio=>({
       Nombre: servicio.Nombre,
       fecha: servicio.fecha,
