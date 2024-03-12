@@ -14,42 +14,41 @@
         <nav class="nav ">
         <img class="logo" src="/img/logo.png" alt="#">
 
-        <button class="btn cerrar" id="btnCerrarSesion">Cerrar Sesion</button>
+        <button id="btnCerrarSesion">Cerrar Sesion</button>
 <button>
 
 </button>
       
       </nav>
     </header>
-    <h1>Bienvenido <span id="nombreUsuario"></span></h1>
+    <h1>bienvenido <span id="nombreUsuario"></span> !</h1>
     <h3 id="nusuario1"></h3> 
    <center><img class="icon" src="img/gatojpg.jpg" alt="centered image"></center>
    <!-- Botón para desplegar servicios -->
-   <button class="btn primary"  id="s_disp">Servicios Disponibles</button>
+   <button id="s_disp">Servicios Disponibles</button>
     <div id="servicios-container" style="display: none;">
         <form id="formularioSeleccionServicio" >
-            <h2  class="tituloh2">Servicios del Usuario</h2>
+            <h2>servicios del usuario</h2>
             <table id="tabla-servicios">
                 <thead>
                     <tr>
                         <th>
-                            Servicio
+                            servicio
                         </th>
                         <th>
-                            Seleccionar
+                            seleccionar
                         </th>
                     </tr>
                 </thead>
-                <tbody class="listadeservicios" id="lista-servicios"></tbody>
+                <tbody id="lista-servicios"></tbody>
             </table>
             <input type="datetime-local" id="fechaHora" name="fechaHora" required>
-            <button class="btn primary" type="submit">Guardar servicios</button>
-            <button class="btn primary" type="reset">Limpiar</button>
+            <button type="submit">Guardar servicios</button>
         </form>
     </div>
-    <button class="btn primary" id="btnDesplegarServiciosGuardados">Desplegar servicios</button>
-    <div class="divdeservicios" id="servicios-guardados-container" style="display: none;">
-        <h2  >Servicios Guardados</h2>
+    <button id="btnDesplegarServiciosGuardados">Desplegar servicios</button>
+    <div id="servicios-guardados-container" style="display: none;">
+        <h2>Servicios Guardados</h2>
         <table id="tabla-servicios-guardados">
           <thead>
             <tr>
@@ -144,12 +143,14 @@
                             const data=JSON.parse(xhrObtenerServiciosGuardados.responseText);
                             listaServiciosGuardados.innerHTML =
                             data.serviciosGuardados.map(servicio=>
-                            `   <tr>
+                            `
+                            <tr>
                                 <td>${servicio.Nombre}</td>
-                                <td>${new Date (servicio.fecha).toUTCString()}</td>
-                                <td><button class="btn primary" onclick="eliminarServicio(${servicio.id})">Eliminar</button></td>
+                                <td>${servicio.fecha}</td>
+                                <td><button class="eliminarboton" onclick="eliminarServicio(${servicio.id})">Eliminar</button></td>
                             </tr>
-                            `).join('');    
+                            `).join('');
+    
     
                         serviciosGuardadosContainer.style.display='block';
                         } else{
