@@ -121,3 +121,19 @@ h1, h3 {
   
 }
 
+h2{
+    padding: 13px;
+    font-size: 30px;
+    text-align: center;
+    
+}
+
+#tablausuarios, #tablamanzanas, #tablaservicios{
+    margin: 90px;
+}
+
+tr, th {
+    background-color: rgb(192, 193, 193);
+    font-size: 40px;
+}
+

@@ -207,21 +207,20 @@ catch(error){
 })
 
 //eliminar los servicios
-app.delete('/eliminar-servicio-usuario/:id',async(req,res)=>{
-const IdS=req.params.id
-console.log("Servicio borrado",IdS)
-try{
-const conect= await mysql.createConnection(db)
-await conect.query('SELECT * FROM solicitudes WHERE solicitudes.id_solicitudes=?',[IdS])
-await conect.execute('DELETE FROM solicitudes WHERE solicitudes.id_solicitudes = ?',[IdS])
-res.status(200).send("Servicio Borrado")
-await conect.end();
-}
-catch(error){
-console.error('Error En El Servidor:',error);
-res.status(500).send('Error En El Servidor.. :c');
-}
-})
+app.delete('/eliminar-servicio/:id',async(req,res)=>{
+  const IdS=req.params.id
+  console.log(IdS,"aksdjask")
+  try{
+    const conect= await mysql.createConnection(db)
+    await conect.execute('DELETE FROM solicitudes WHERE solicitudes.id_solicitudes = ?',[IdS])
+    res.status(200).send("Servicio Borrado")
+    await conect.end();
+  }
+  catch(error){
+    console.error('Error En El Servidor:',error);
+   res.status(500).send('Error En El Servidor..:c');
+  }
+  })
 
 
 
